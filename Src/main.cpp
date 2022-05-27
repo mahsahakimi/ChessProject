@@ -1,38 +1,16 @@
+// main.cpp
+    // main func
 #include <iostream>
-#include <iomanip>
-
 using namespace std;
 
-int existMohre[8][8] =  { // is exist Mohre
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0}
-                        }; // 1: White -1: Black
-int dangerForWhite[8][8] =  { // is exist danger for white Mohre 
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0}
-                        }; // 1: Yes
-int dangerForBlack[8][8] =  { // is exist danger for Black Mohre 
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0},
-                        {0, 0, 0, 0, 0, 0, 0, 0}
-                        }; // 1: Yes
+#include <iomanip>
+
+#include <SFML/Graphics.hpp>
+using namespace sf;
+
+int existMohre[8][8]; // is exist Mohre 1: White -1: Black
+int dangerForWhite[8][8]; // is exist danger for white Mohre 1: Yes
+int dangerForBlack[8][8]; // is exist danger for Black Mohre 1: Yes
 
 bool kish(int color_king, int i, int j)
 {
@@ -99,8 +77,6 @@ public:
     };
 
     friend ostream& operator<< (ostream& stream, const Point& point);
-
-    
 };
 
 ostream& operator<< (ostream& stream, const Point& point)
@@ -120,31 +96,21 @@ public:
     char color; // color of Mohre
     bool isInit; // if Mohre initialized is true; else false.
 
-    int singleMoves[8][8] = { // single moves
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0},
-                            {0, 0, 0, 0, 0, 0, 0, 0}
-                            };
+    int singleMoves[8][8]; // single moves
     void(*funcSingleMoves)(int singleMoves[8][8], Point currentAddress); // the func for update single moves
-    int imageAttacks[8][8] =   { // noghat morede tahdid
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 0, 0}
-                                };
+
+    int imageAttacks[8][8]; // noghat morede tahdid
     void(*funcImageAttacks)(int imageAttacks[8][8], Point currentAddress); // the func for update image attacks
     
     Mohre(int y_formal = 0, int x_formal = 0, char type_formal = '-', char color_formal = '-') // init current address
     {
+        for (int i = 0; i < 8; i++) // set deafult singleMoves and imageAttacks
+            for (int j = 0; j < 8; j++)
+            {
+                singleMoves[i][j] = 0;
+                imageAttacks[i][j] = 0;
+            }
+
         Point currentAddress_formal(y_formal, x_formal);
         this -> currentAddress = currentAddress_formal;
         if (type_formal != '-')
@@ -1161,10 +1127,9 @@ public:
     };
 };
 
-// Point ans_point[4][64];
-Point** ans_point = new Point*[4];
-int* ans_Bool = new int[64];
-int counter_ans = 0;
+Point** ans_point;
+int* ans_Bool;
+int counter_ans;
 
 /*
 step0 = makan avalie, harekat 1m ma [64] (test all)
@@ -1538,12 +1503,30 @@ int Defence(int player1, const char* lcb, int step = 0)
     return step - 1;
 };
 
-int main()
-    {
+void set()
+{
+    ::ans_point = new Point*[4];
+    for (int i = 0; i < 4; i++)
+        ::ans_point[i] = new Point[64];
+
+    ans_Bool = new int[64];
     fill_n(::ans_Bool, 64, 0); // set the ans bool!
 
+    ::counter_ans = 0;
+}
+
+void clean()
+{
     for (int i = 0; i < 4; i++)
-        ans_point[i] = new Point[64];
+        delete[] ::ans_point[i];
+    delete[] ::ans_point;
+
+    delete[] ::ans_Bool;
+}
+
+void play_game()
+{
+    set(); // set deafult to statrt game
 
     char which_player, type_game; // Input stat of start
     cin >> which_player >> type_game;
@@ -1627,10 +1610,7 @@ int main()
         }
     }
 
-    for (int i = 0; i < 4; i++)
-        delete[] ans_point[i];
-    delete[] ans_point;
-    delete[] ans_Bool;
+    clean(); // clean code to new set
 
     int i_end = 0;
     string ans_end[::counter_ans];
@@ -1685,6 +1665,21 @@ int main()
     for (int i = 0; i <= i_end; i++)
         if (ans_end[i] != "")
             cout << ans_end[i] << '\n';
+}
+
+int main()
+{
+    for (int i = 0; i < 8; i++) // set global mats!
+        for (int j = 0; j < 8; j++)
+        {
+            ::existMohre[i][j] = 0;
+            ::dangerForWhite[i][j] = 0;
+            ::dangerForBlack[i][j] = 0; 
+        }
+
+    play_game();
+    
+    
 
     return 0;
 }

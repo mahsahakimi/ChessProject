@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mahsa/AP Project/faz2/Src/main.cpp
+iostream
+-
+iomanip
+-
+SFML/Graphics.hpp
+-
+
+/home/mahsa/AP Project/faz2/test4.cpp
+iostream
+-
+SFML/Graphics.hpp
+-
+./Src/main.cpp
+/home/mahsa/AP Project/faz2/Src/main.cpp
+

@@ -1,0 +1,3 @@
+/home/mahsa/AP Project/faz2/CMakeFiles/edit_cache.dir
+/home/mahsa/AP Project/faz2/CMakeFiles/rebuild_cache.dir
+/home/mahsa/AP Project/faz2/CMakeFiles/x.dir
