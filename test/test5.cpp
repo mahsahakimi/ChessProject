@@ -45,10 +45,10 @@ public:
 
     Point(int y = 0, int x = 0) // y, x init current address "Norm"
     {
-        if (!(0 <= x && x < 8))
-            cout << "\nx = " << x << " is invalid!\n";
-        if (!(0 <= y && y < 8))
-            cout << "\ny = " << y << " is invalid!\n";
+        // if (!(0 <= x && x < 8))
+        //     cout << "\nx = " << x << " is invalid!\n";
+        // if (!(0 <= y && y < 8))
+        //     cout << "\ny = " << y << " is invalid!\n";
         this -> mem_x = x;
         this -> mem_y = y;
     };
@@ -1156,6 +1156,37 @@ public:
     }
 };
 
+Point** getSingleMoves2(const char* lcb, Point p0, int player1)
+{
+    ChessBoard ccb;
+    ccb.inputChessBoard(lcb);
+    ccb.updateAll();
+    
+    Point** sm = ccb.chessBoard[p0.row()][p0.column()]->getSingleMoves();
+
+    int counter = 0;
+    Point** pointPtr = new Point*[64];
+
+    for (int i = 0; sm[i] != 0; i++)
+    {
+        ccb.inputChessBoard(lcb);
+        ccb.updateAll();
+
+        Point p1 = *sm[i];
+        ccb.chessBoard[p0.row()][p0.column()] -> doMove(p1);
+        ccb.move(p0, p1);
+
+        if (ccb.kish(player1) == false)
+        {
+            pointPtr[counter] = sm[i];
+            counter++;
+        }
+    }
+    pointPtr[counter] = 0;
+    counter++;
+    return pointPtr;
+}
+
 Point** ans_point;
 int* ans_Bool;
 int counter_ans;
@@ -1696,6 +1727,61 @@ void play_game()
             cout << ans_end[i] << '\n';
 }
 
+sf::Text printText(std::string massege, sf::Font font, sf::Text status_text)
+{
+    font.loadFromFile("../Resources/Fonts/PinaColadaCreation.ttf");
+
+    status_text.setFont(font);
+
+    int j = 7, i = 0;
+    j = 7.5f + 50.0f + (105*j) + 63, i = 7.5f + 50.0f + (105*i) - 40;
+
+    const int size = 40;
+    status_text.setCharacterSize(size);
+    status_text.setStyle(sf::Text::Bold);
+    status_text.setFillColor(sf::Color::Black);
+    status_text.setPosition(j, i);
+    status_text.setString(massege);
+    return status_text;
+}
+
+sf::Text printTextKishorMat(sf::Font font, sf::Text status_text, int type) // 1: kish, -1: mat
+{
+    std::string str = (type == 1 ? "Kish!" : "Mate!");
+
+    font.loadFromFile("../Resources/Fonts/PinaColadaCreation.ttf");
+
+    status_text.setFont(font);
+
+    int j = 7, i = 1;
+    j = 7.5f + 50.0f + (105*j) + 95, i = 7.5f + 50.0f + (105*i) - 70;
+
+    const int size = 60;
+    status_text.setCharacterSize(size);
+    status_text.setStyle(sf::Text::Bold);
+    status_text.setFillColor(sf::Color::Black);
+    status_text.setPosition(j, i);
+    status_text.setString(str);
+    return status_text;
+}
+
+bool mat(const char* lcb, int player)
+{
+    ChessBoard ccb;
+    ccb.inputChessBoard(lcb);
+    ccb.updateAll();
+
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            if (ccb.chessBoard[i][j] -> getIsInit() == true && ccb.chessBoard[i][j] -> getColor() == (player == 1 ? 'W' : 'B'))
+            {
+                Point** m = getSingleMoves2(lcb, Point(i, j), player);
+                if (m[0] != 0)
+                    return false;
+            }
+    return true;
+}
+
 int main()
 {
     for (int i = 0; i < 8; i++) // set global mats!
@@ -1714,6 +1800,9 @@ int main()
 
     sf::RenderWindow window (sf::VideoMode(window_height, window_width), "Basic Chess", sf::Style::Close | sf::Style::Titlebar); // creat window
     window.setFramerateLimit(8);
+
+    sf::Font font;
+    sf::Text status_text;
 
     sf::RectangleShape back_ground (sf::Vector2f(845 + 200, 845)); // create a shape
     back_ground.setFillColor(sf::Color(0, 0, 128)); // color the shape
@@ -1798,7 +1887,8 @@ int main()
                     which_mohre.setTexture(&which_mohre_texture);
                     which_mohre.setFillColor(sf::Color::Magenta);
 
-                    Point** moves = chessboard.chessBoard[y][x] -> getSingleMoves();
+                    chessboard.updateAll();
+                    Point** moves = getSingleMoves2(chessboard.returnChessBoard(), p0, (turn % 2 == 0 ? 1 : -1));
 
                     window.clear(sf::Color(0, 0, 0)); // clear the buffer
                     window.draw(back_ground);
@@ -1837,8 +1927,13 @@ int main()
                         danger_point.setTexture(&danger_point_texture);
                         danger_point.setFillColor(sf::Color::Red);
                         window.draw(danger_point);
+                        if (mat(chessboard.returnChessBoard(), turn_who))
+                            window.draw(printTextKishorMat(font, status_text, -1));
+                        else
+                            window.draw(printTextKishorMat(font, status_text, 1));
                     }
 
+                    window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
                     window.display();
 
 
@@ -1881,7 +1976,8 @@ int main()
                             {
                                 p0 = p1;
 
-                                moves = chessboard.chessBoard[y][x] -> getSingleMoves();
+                                chessboard.updateAll();
+                                moves = getSingleMoves2(chessboard.returnChessBoard(), p0, (turn % 2 == 0 ? 1 : -1));
 
                                 sf::Vector2i mousePos3 = sf::Mouse::getPosition(window);
                                 x = mousePos3.x, y = mousePos3.y;
@@ -1947,8 +2043,13 @@ int main()
                                     danger_point.setTexture(&danger_point_texture);
                                     danger_point.setFillColor(sf::Color::Red);
                                     window.draw(danger_point);
+                                    if (mat(chessboard.returnChessBoard(), turn_who))
+                                        window.draw(printTextKishorMat(font, status_text, -1));
+                                    else
+                                        window.draw(printTextKishorMat(font, status_text, 1));
                                 }
 
+                                window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
                                 window.display();
                             }
                             for (int i = 0; moves[i] != 0; i++)
@@ -1991,8 +2092,13 @@ int main()
             danger_point.setTexture(&danger_point_texture);
             danger_point.setFillColor(sf::Color::Red);
             window.draw(danger_point);
+            if (mat(chessboard.returnChessBoard(), turn_who))
+                window.draw(printTextKishorMat(font, status_text, -1));
+            else
+                window.draw(printTextKishorMat(font, status_text, 1));
         }
 
+        window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
         window.display(); // out pot the buffer
     }
 
