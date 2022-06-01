@@ -1709,16 +1709,15 @@ int main()
     int turn = 0; // odd: turn black
                   // even: turn white
 
-
-    int window_height = 850 + 400, window_width = 850;
+    int window_height = 850 + 200, window_width = 850;
     float cell_size = 100.0f;
 
     sf::RenderWindow window (sf::VideoMode(window_height, window_width), "Basic Chess", sf::Style::Close | sf::Style::Titlebar); // creat window
     window.setFramerateLimit(8);
 
-    sf::RectangleShape back_ground (sf::Vector2f(845 + 600, 845)); // create a shape
+    sf::RectangleShape back_ground (sf::Vector2f(845 + 200, 845)); // create a shape
     back_ground.setFillColor(sf::Color(0, 0, 128)); // color the shape
-    back_ground.setOrigin(845 / 2 + 300, 845 / 2); // set the center of shape
+    back_ground.setOrigin(845 / 2 + 100, 845 / 2); // set the center of shape
     back_ground.setPosition(window_height / 2, window_width / 2); // set the start of shepe
 
     sf::RectangleShape cells[8][8];
@@ -1736,8 +1735,7 @@ int main()
             cells[i][j] = cell;
         }
 
-    
-    int i1 = 7, j1 = 11;
+    int i1 = 7, j1 = 9;
     Point clr_point(i1, j1);
     sf::RectangleShape clr(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
     clr.setOrigin(45.0f, 45.0f); // set the center of MOHRE
@@ -1753,22 +1751,13 @@ int main()
     while (window.isOpen())
     {
         sf::Event evnt; // create event
-
         while (window.pollEvent(evnt))
         {
-
             switch (evnt.type)
             {
             case sf::Event::Closed: // if tap the botten X
                 window.close();
-                break;
-
-            case sf::Event::TextEntered: // print the chars which inputed of keyboard
-                if (evnt.text.unicode < 128) // the char != ctrl, '\n', ...
-                    printf("%c", evnt.text.unicode);
-                break;
-
-            default: 
+                exit(0);
                 break;
             }
         }
@@ -1783,18 +1772,32 @@ int main()
             Point now(y, x);
             if (clr_point == now)
             {
-                chessboard.clear();    
+                chessboard.clear(); 
+                window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                    window.draw(back_ground);
+                    for (int i = 0; i < 8; i++)
+                        for (int j = 0; j < 8; j++)
+                            window.draw(cells[i][j]);
+                chessboard.display(window);
                 turn = 0;
+                continue;
             }
 
             if (chessboard.chessBoard[y][x] -> getIsInit() == true)
             {
                 Point p0(y, x);
 
-                if ((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B'))
+                if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()))
                 {
-                    printf("x0: %i,  y0: %i,  turn: %i\n", x, y, turn);
-                    
+                    // printf("x0: %i,  y0: %i,  turn: %i\n", x, y, turn);
+                    sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                    which_mohre.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                    which_mohre.setPosition(7.5f + 50.0f + (105*x), 7.5f + 50.0f + (105*y)); // set the start of MOHRE
+                    sf::Texture which_mohre_texture; // set photo
+                    which_mohre_texture.loadFromFile("./images/dot.png");
+                    which_mohre.setTexture(&which_mohre_texture);
+                    which_mohre.setFillColor(sf::Color::Magenta);
+
                     Point** moves = chessboard.chessBoard[y][x] -> getSingleMoves();
 
                     window.clear(sf::Color(0, 0, 0)); // clear the buffer
@@ -1804,6 +1807,7 @@ int main()
                             window.draw(cells[i][j]);
 
                     chessboard.display(window);
+
                     for (int i = 0; moves[i] != 0; i++)
                     {
                         int i1 = (*moves[i]).row(), j1 = (*moves[i]).column();
@@ -1819,6 +1823,7 @@ int main()
                     }
 
                     window.draw(clr);
+                    window.draw(which_mohre);
 
                     int turn_who = (turn % 2 == 0 ? 1 : -1);
                     if (chessboard.kish(turn_who))
@@ -1841,19 +1846,70 @@ int main()
                     while (tmp)
                     {
                         if (window.pollEvent(evnt) && evnt.type == sf::Event::Closed)
-                            window.close();
+                        {
+                                window.close();
+                                exit(0);
+                        }
 
                         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                         {
+                            if (window.pollEvent(evnt) && evnt.type == sf::Event::Closed)
+                            {
+                                window.close();
+                                exit(0);
+                            }
+
                             sf::Vector2i mousePos2 = sf::Mouse::getPosition(window);
                             x = mousePos2.x, y = mousePos2.y;
                             x = (x - 7.5) / (cell_size + 5), y = (y - 7.5) / (cell_size + 5);  
                             Point p1(y, x);
 
-                            if ((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B'))
+                            if (clr_point == p1)
+                            {
+                                chessboard.clear(); 
+                                window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                    window.draw(back_ground);
+                                    for (int i = 0; i < 8; i++)
+                                        for (int j = 0; j < 8; j++)
+                                            window.draw(cells[i][j]);
+                                chessboard.display(window);
+                                turn = 0;
+                                break;
+                            }
+
+                            if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()))
                             {
                                 p0 = p1;
-                                Point** moves = chessboard.chessBoard[y][x] -> getSingleMoves();
+
+                                moves = chessboard.chessBoard[y][x] -> getSingleMoves();
+
+                                sf::Vector2i mousePos3 = sf::Mouse::getPosition(window);
+                                x = mousePos3.x, y = mousePos3.y;
+                                x = (x - 7.5) / (cell_size + 5), y = (y - 7.5) / (cell_size + 5);  
+                                Point p1_2(y, x);
+                                p1 = p1_2;
+
+                                if (clr_point == p1)
+                                {
+                                    chessboard.clear(); 
+                                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                        window.draw(back_ground);
+                                        for (int i = 0; i < 8; i++)
+                                            for (int j = 0; j < 8; j++)
+                                                window.draw(cells[i][j]);
+                                    chessboard.display(window);
+                                    turn = 0;
+                                    break;
+                                }
+
+                                sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                                which_mohre.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                                which_mohre.setPosition(7.5f + 50.0f + (105*p0.column()), 7.5f + 50.0f + (105*p0.row())); // set the start of MOHRE
+                                sf::Texture which_mohre_texture; // set photo
+                                which_mohre_texture.loadFromFile("./images/dot.png");
+                                which_mohre.setTexture(&which_mohre_texture);
+                                which_mohre.setFillColor(sf::Color::Magenta);
+
                                 window.clear(sf::Color(0, 0, 0)); // clear the buffer
                                 window.draw(back_ground);
                                 for (int i = 0; i < 8; i++)
@@ -1861,6 +1917,7 @@ int main()
                                         window.draw(cells[i][j]);
 
                                 chessboard.display(window);
+
                                 for (int i = 0; moves[i] != 0; i++)
                                 {
                                     int i1 = (*moves[i]).row(), j1 = (*moves[i]).column();
@@ -1876,6 +1933,7 @@ int main()
                                 }
 
                                 window.draw(clr);
+                                window.draw(which_mohre);
 
                                 int turn_who = (turn % 2 == 0 ? 1 : -1);
                                 if (chessboard.kish(turn_who))
@@ -1893,9 +1951,6 @@ int main()
 
                                 window.display();
                             }
-
-                            printf("x1: %i,  y1: %i,  turn: %i\n", x, y, turn);
-
                             for (int i = 0; moves[i] != 0; i++)
                             {
                                 if (p1 == *moves[i])
@@ -1906,12 +1961,13 @@ int main()
                                     break;
                                 }
                             } 
+                            // printf("x1: %i,  y1: %i,  turn: %i\n", x, y, turn);
                         }
+
                     }
                 }
 
             }
-            
         }
 
         window.clear(sf::Color(0, 0, 0)); // clear the buffer

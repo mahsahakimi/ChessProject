@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/mahsa/AP/test
+CMAKE_SOURCE_DIR = "/home/mahsa/AP Project/faz2/test"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/mahsa/AP/test
+CMAKE_BINARY_DIR = "/home/mahsa/AP Project/faz2/test"
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ clean: CMakeFiles/x.dir/clean
 CMakeFiles/x.dir/all:
 	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/depend
 	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mahsa/AP/test/CMakeFiles --progress-num=1,2 "Built target x"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/mahsa/AP Project/faz2/test/CMakeFiles" --progress-num=1,2 "Built target x"
 .PHONY : CMakeFiles/x.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/x.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/mahsa/AP/test/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/mahsa/AP Project/faz2/test/CMakeFiles" 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/x.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/mahsa/AP/test/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/mahsa/AP Project/faz2/test/CMakeFiles" 0
 .PHONY : CMakeFiles/x.dir/rule
 
 # Convenience name for target.

@@ -1,3 +1,3 @@
-/home/mahsa/AP/test/CMakeFiles/edit_cache.dir
-/home/mahsa/AP/test/CMakeFiles/rebuild_cache.dir
-/home/mahsa/AP/test/CMakeFiles/x.dir
+/home/mahsa/AP Project/faz2/test/CMakeFiles/edit_cache.dir
+/home/mahsa/AP Project/faz2/test/CMakeFiles/rebuild_cache.dir
+/home/mahsa/AP Project/faz2/test/CMakeFiles/x.dir
