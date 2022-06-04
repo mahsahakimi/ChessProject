@@ -23,6 +23,7 @@ int main()
     sf::RenderWindow window (sf::VideoMode(800, 500), "Chess", sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize); // creat window
     sf::Font font;
     sf::Text status_text;
+    int f = 1;
 
     while (window.isOpen())
     {
@@ -38,11 +39,37 @@ int main()
             }
         }
 
+        std::string str;
+        str = sf::Clipboard::getString();
+
+        if (str == "")
+            str = "Nothing";
+
+        
+        if (f)
+            for (int i = 0; i < 194; i++)
+            {
+                f = 0;
+                std::cout << i <<  " = " << str[i]<< (str[i] == 'B' ? 1 : 70) << std::endl;
+            }
+
         window.clear(sf::Color(100, 150, 150)); // clear the buffer
-        window.draw(printText("Arezoo", font, status_text));
+        window.draw(printText(str, font, status_text));
         window.display(); // out pot the buffer
     }
     
 
     return 0;
 }
+
+/*
+BD
+-- -- -- -- -- -- -- --
+PB -- -- -- -- -- -- --
+KB -- KW -- -- -- -- --
+-- -- -- -- -- -- -- --
+-- PB PB -- -- PW -- --
+-- -- -- -- -- RW -- --
+-- -- -- -- -- -- -- --
+-- -- -- -- BW -- -- LK
+*/

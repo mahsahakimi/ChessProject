@@ -132,7 +132,7 @@ public:
             graph_mohre = new  sf::RectangleShape(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
             graph_mohre -> setOrigin(45.0f, 45.0f); // set the center of MOHRE
             graph_mohre -> setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
-            graph_mohre -> setFillColor((color_formal == 'W' ? sf::Color::Green : sf::Color::Blue));
+            graph_mohre -> setFillColor((color_formal == 'W' ? sf::Color(0, 250, 0) : sf::Color(0, 0, 250)));
 
             mem_mohre_texture = new sf::Texture;
             mem_mohre_texture -> loadFromFile(pic_add);
@@ -918,6 +918,58 @@ public:
             }; 
     };
 
+    void input_clipboard(string str) // Set Blocks 
+    {
+        char typ, clr;
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+            {
+                typ = str[3 + (i)*24 + j*3];
+                clr = str[4 + (i)*24 + j*3];
+               
+                if ( typ == 'R')
+                {
+                    Rook* R = new Rook(i, j, clr);
+                    chessBoard[i][j] = R;
+                }
+                else if ( typ == 'N')
+                {
+                    Knight* N = new Knight(i, j, clr);
+                    chessBoard[i][j] = N;
+                }
+                else if ( typ == 'B')
+                {
+                    Bishop* B = new Bishop(i, j, clr);
+                    chessBoard[i][j] = B;
+                }
+                else if ( typ == 'Q')
+                {
+                    Queen *Q = new Queen(i, j, clr);
+                    chessBoard[i][j] = Q;
+                }
+                else if ( typ == 'K')
+                {
+                    King *K = new King(i, j, clr);
+                    chessBoard[i][j] = K;
+                    if (clr == 'W')
+                        whiteKing = K;
+                    else if (clr == 'B')
+                        blackKing = K;
+                }
+                else if ( typ == 'P')
+                {
+                    Pawn *P = new Pawn(i, j, clr);
+                    chessBoard[i][j] = P;
+                }
+                else if ( typ == '-')
+                {
+                    Mohre* m = new Mohre(i, j, clr);
+                    chessBoard[i][j] = m;
+                };
+            }; 
+    };
+
+  
     void updateAll(int row = 8, int column = 8)
     {
         for (int i = 0; i < row; i++)
@@ -1584,23 +1636,23 @@ void clean()
     delete[] ::ans_Bool;
 }
 
-void play_game()
+void play_game(char which_player, char type_game, const char* backUp)
 {
     set(); // set deafult to statrt game
 
-    char which_player, type_game; // Input stat of start
-    cin >> which_player >> type_game;
+    // char which_player, type_game; // Input stat of start
+    // cin >> which_player >> type_game;
     int player1 = (which_player == 'W' ? 1 : -1);
 
     ChessBoard chessBoard; // create chess board
-    chessBoard.input(); // set chessBoard
+    chessBoard.inputChessBoard(backUp); // set chessBoard
     chessBoard.updateAll(); // update chess board
     // chessBoard.print(); // print chessBoard (not imp)
     // chessBoard.printDangerForBlack(); // print Danger For Black (not imp)
     // chessBoard.printDangerForWhite(); // print Danger For White (not imp)
     // chessBoard.statOfAll(); // print status of all (not imp)
 
-    const char* backUp = chessBoard.returnChessBoard();
+    // const char* backUp = chessBoard.returnChessBoard();
     // cout << "\n^^^^^^^^^^^^^^^^^^^^^^^^^^\nThe Game Started! \n\n";
     if (type_game == 'M')
         Mate(player1, chessBoard.returnChessBoard(), 0);
@@ -1608,123 +1660,123 @@ void play_game()
         Defence(player1, chessBoard.returnChessBoard(), 0);
 
     // cout << "\nThe Game ended! \n\nans: \n";
-    chessBoard.inputChessBoard(backUp); // undo
+    // chessBoard.inputChessBoard(backUp); // undo
 
     // cout << "counter ans: " << counter_ans << endl;
-    string ans[::counter_ans];
-    fill_n(ans, ::counter_ans, "");
+    // string ans[::counter_ans];
+    // fill_n(ans, ::counter_ans, "");
 
-    int ans_frq[::counter_ans];
-    fill_n(ans_frq, ::counter_ans, 0);
+    // int ans_frq[::counter_ans];
+    // fill_n(ans_frq, ::counter_ans, 0);
 
-    int i_fin = 0;
-    string ans_fin[::counter_ans];
-    fill_n(ans_fin, ::counter_ans, "");
+    // int i_fin = 0;
+    // string ans_fin[::counter_ans];
+    // fill_n(ans_fin, ::counter_ans, "");
 
-    int ans_fin_frq[::counter_ans];
-    fill_n(ans_fin_frq, ::counter_ans, 0);
+    // int ans_fin_frq[::counter_ans];
+    // fill_n(ans_fin_frq, ::counter_ans, 0);
 
-    if (counter_ans == 0)
-    {
-        cout << "No Answer!";
-        exit(0);
-    }
-    else
-    {
-        for (int i = 0; i <= counter_ans; i++)
-        {
-            int row = ::ans_point[0][i].row();
-            int column = ::ans_point[0][i].column();
+    // if (counter_ans == 0)
+    // {
+    //     cout << "No Answer!";
+    //     exit(0);
+    // }
+    // else
+    // {
+    //     for (int i = 0; i <= counter_ans; i++)
+    //     {
+    //         int row = ::ans_point[0][i].row();
+    //         int column = ::ans_point[0][i].column();
 
-            // if (ans_Bool[i] == 1)
-            //     cout << ::ans_point[0][i] << chessBoard.chessBoard[row][column]->getType() << chessBoard.chessBoard[row][column]->getColor() << ans_point[1][i] << '\n';
+    //         // if (ans_Bool[i] == 1)
+    //         //     cout << ::ans_point[0][i] << chessBoard.chessBoard[row][column]->getType() << chessBoard.chessBoard[row][column]->getColor() << ans_point[1][i] << '\n';
             
-            if (ans_Bool[i] == 1)
-            {
-                Point** moves = chessBoard.chessBoard[row][column] -> getSingleMoves();
-                int x = 0;
-                for (; moves[x] != 0; x++);
-                ans_frq[i] = x;
+    //         if (ans_Bool[i] == 1)
+    //         {
+    //             Point** moves = chessBoard.chessBoard[row][column] -> getSingleMoves();
+    //             int x = 0;
+    //             for (; moves[x] != 0; x++);
+    //             ans_frq[i] = x;
 
-                ans[i] += char(::ans_point[0][i].column() + int('a'));
-                ans[i] += char(int('0') + 8 - ::ans_point[0][i].row());
-                ans[i] += chessBoard.chessBoard[row][column]->getType();
-                ans[i] += chessBoard.chessBoard[row][column]->getColor();
-                ans[i] += char(::ans_point[1][i].column() + int('a'));
-                ans[i] += char(int('0') + 8 - ::ans_point[1][i].row());
+    //             ans[i] += char(::ans_point[0][i].column() + int('a'));
+    //             ans[i] += char(int('0') + 8 - ::ans_point[0][i].row());
+    //             ans[i] += chessBoard.chessBoard[row][column]->getType();
+    //             ans[i] += chessBoard.chessBoard[row][column]->getColor();
+    //             ans[i] += char(::ans_point[1][i].column() + int('a'));
+    //             ans[i] += char(int('0') + 8 - ::ans_point[1][i].row());
 
-                if (i == 0)
-                {
-                    ans_fin[0] = ans[0];
-                    ans_fin_frq[0]++;
-                }
-                else if (ans[i].substr(0, 4) == ans_fin[i_fin].substr(0, 4))
-                    ans_fin_frq[i_fin]++;
-                else if (ans[i].substr(0, 4) != ans_fin[i_fin].substr(0, 4))
-                {
-                    i_fin++;
-                    ans_fin[i_fin] = ans[i];
-                    ans_fin_frq[i_fin]++;
-                }
-            }
-        }
-    }
+    //             if (i == 0)
+    //             {
+    //                 ans_fin[0] = ans[0];
+    //                 ans_fin_frq[0]++;
+    //             }
+    //             else if (ans[i].substr(0, 4) == ans_fin[i_fin].substr(0, 4))
+    //                 ans_fin_frq[i_fin]++;
+    //             else if (ans[i].substr(0, 4) != ans_fin[i_fin].substr(0, 4))
+    //             {
+    //                 i_fin++;
+    //                 ans_fin[i_fin] = ans[i];
+    //                 ans_fin_frq[i_fin]++;
+    //             }
+    //         }
+    //     }
+    // }
 
-    clean(); // clean code to new set
+    // clean(); // clean code to new set
 
-    int i_end = 0;
-    string ans_end[::counter_ans];
-    fill_n(ans_end, ::counter_ans, "");
+    // int i_end = 0;
+    // string ans_end[::counter_ans];
+    // fill_n(ans_end, ::counter_ans, "");
     
-    int i = 0;
-    while (i < counter_ans)
-    {
-        int itsFrqIn = ans_frq[i];
-        int MaxFrq;
+    // int i = 0;
+    // while (i < counter_ans)
+    // {
+    //     int itsFrqIn = ans_frq[i];
+    //     int MaxFrq;
 
-        for (int j = 0; j <= i_fin; j++)
-            if (ans_fin[j].substr(0, 4) == ans[i].substr(0, 4))
-                MaxFrq = ans_fin_frq[j];
-        if (itsFrqIn == MaxFrq)
-        {
-            ans_end[i_end] = ans[i].substr(0, 4);
-            i++;
-            while (ans_end[i_end] == ans[i].substr(0, 4))
-            {
-                i++;
-            }
-            if (i_end + 1 < ::counter_ans)
-                i_end++;
-        }
-        else
-        {
-            ans_end[i_end] = ans[i];
-            i++;
-            while (ans_end[i_end].substr(0, 4) == ans[i].substr(0, 4))
-            {
-                i_end++;
-                ans_end[i_end] = ans[i];
-                i++;
-            }
-            if (i_end + 1 < ::counter_ans)
-                i_end++;
-        }
-    }
+    //     for (int j = 0; j <= i_fin; j++)
+    //         if (ans_fin[j].substr(0, 4) == ans[i].substr(0, 4))
+    //             MaxFrq = ans_fin_frq[j];
+    //     if (itsFrqIn == MaxFrq)
+    //     {
+    //         ans_end[i_end] = ans[i].substr(0, 4);
+    //         i++;
+    //         while (ans_end[i_end] == ans[i].substr(0, 4))
+    //         {
+    //             i++;
+    //         }
+    //         if (i_end + 1 < ::counter_ans)
+    //             i_end++;
+    //     }
+    //     else
+    //     {
+    //         ans_end[i_end] = ans[i];
+    //         i++;
+    //         while (ans_end[i_end].substr(0, 4) == ans[i].substr(0, 4))
+    //         {
+    //             i_end++;
+    //             ans_end[i_end] = ans[i];
+    //             i++;
+    //         }
+    //         if (i_end + 1 < ::counter_ans)
+    //             i_end++;
+    //     }
+    // }
 
-    for (int i = 0; i <= i_end; i++);
+    // for (int i = 0; i <= i_end; i++);
 
-    // cout << endl << " ll";
-    for (int i = 0; i <= i_end; i++)
-        for (int j = i + 1; j <= i_end; j++)
-            if (ans_end[j] < ans_end[i])
-            {
-                string tmp = ans_end[i];
-                ans_end[i] = ans_end[j];
-                ans_end[j] = tmp;
-            }
-    for (int i = 0; i <= i_end; i++)
-        if (ans_end[i] != "")
-            cout << ans_end[i] << '\n';
+    // // cout << endl << " ll";
+    // for (int i = 0; i <= i_end; i++)
+    //     for (int j = i + 1; j <= i_end; j++)
+    //         if (ans_end[j] < ans_end[i])
+    //         {
+    //             string tmp = ans_end[i];
+    //             ans_end[i] = ans_end[j];
+    //             ans_end[j] = tmp;
+    //         }
+    // for (int i = 0; i <= i_end; i++)
+    //     if (ans_end[i] != "")
+    //         cout << ans_end[i] << '\n';
 }
 
 sf::Text printText(std::string massege, sf::Font font, sf::Text status_text)
@@ -1798,14 +1850,14 @@ int main()
     int window_height = 850 + 200, window_width = 850;
     float cell_size = 100.0f;
 
-    sf::RenderWindow window (sf::VideoMode(window_height, window_width), "Basic Chess", sf::Style::Close | sf::Style::Titlebar); // creat window
+    sf::RenderWindow window (sf::VideoMode(window_height, window_width), "Chess", sf::Style::Close | sf::Style::Titlebar); // creat window
     window.setFramerateLimit(8);
 
     sf::Font font;
     sf::Text status_text;
 
     sf::RectangleShape back_ground (sf::Vector2f(845 + 200, 845)); // create a shape
-    back_ground.setFillColor(sf::Color(0, 0, 128)); // color the shape
+    back_ground.setFillColor(sf::Color(0, 0, 128)); // color the shape //128, 200
     back_ground.setOrigin(845 / 2 + 100, 845 / 2); // set the center of shape
     back_ground.setPosition(window_height / 2, window_width / 2); // set the start of shepe
 
@@ -1824,7 +1876,7 @@ int main()
             cells[i][j] = cell;
         }
 
-    int i1 = 7, j1 = 9;
+    int i1 = 7, j1 = 8;
     Point clr_point(i1, j1);
     sf::RectangleShape clr(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
     clr.setOrigin(45.0f, 45.0f); // set the center of MOHRE
@@ -1834,8 +1886,23 @@ int main()
     clr.setTexture(&clr_texture);
     // clr.setFillColor(sf::Color::Yellow);
 
+    // int i2 = 4, j2 = 8;
+    // Point input_botten_point(i2, j2);
+    // sf::RectangleShape input_botten(sf::Vector2f(2*90.0f, 2*90.0f)); // create a MOHRE
+    // input_botten.setOrigin(2*45.0f, 45.0f); // set the center of MOHRE
+    // input_botten.setPosition(7.5f + 50.0f + (105*j2) + 47, 7.5f + 50.0f + (105*i2) + 7); // set the start of MOHRE
+    // input_botten.setFillColor(sf::Color(0, 0, 28));
+
     ChessBoard chessboard;
-    chessboard.clear();  
+    std::string str;
+    // str = sf::Clipboard::getString();
+    // str = "BD\n-- -- -- -- -- -- -- --\nPB -- -- -- -- -- -- --\nKB -- KW -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- PB PB -- -- PW -- --\n-- -- -- -- -- RW -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- BW -- -- LK";
+    // if (str == "")
+        chessboard.clear();  
+    // else
+    // {
+    //     chessboard.input_clipboard(str.substr(0, 194));
+    // }
 
     while (window.isOpen())
     {
