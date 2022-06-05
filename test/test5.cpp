@@ -1886,23 +1886,19 @@ int main()
     clr.setTexture(&clr_texture);
     // clr.setFillColor(sf::Color::Yellow);
 
-    // int i2 = 4, j2 = 8;
-    // Point input_botten_point(i2, j2);
-    // sf::RectangleShape input_botten(sf::Vector2f(2*90.0f, 2*90.0f)); // create a MOHRE
-    // input_botten.setOrigin(2*45.0f, 45.0f); // set the center of MOHRE
-    // input_botten.setPosition(7.5f + 50.0f + (105*j2) + 47, 7.5f + 50.0f + (105*i2) + 7); // set the start of MOHRE
-    // input_botten.setFillColor(sf::Color(0, 0, 28));
+    int i2 = 7, j2 = 9;
+    Point input_point(i2, j2);
+    sf::RectangleShape input_booten(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+    input_booten.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+    input_booten.setPosition(7.5f + 50.0f + (105*j2), 7.5f + 50.0f + (105*i2)); // set the start of MOHRE
+    sf::Texture input_booten_texture; // set photo
+    input_booten_texture.loadFromFile("./images/input.png");
+    input_booten.setTexture(&input_booten_texture);
 
     ChessBoard chessboard;
     std::string str;
-    // str = sf::Clipboard::getString();
-    // str = "BD\n-- -- -- -- -- -- -- --\nPB -- -- -- -- -- -- --\nKB -- KW -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- PB PB -- -- PW -- --\n-- -- -- -- -- RW -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- BW -- -- LK";
-    // if (str == "")
-        chessboard.clear();  
-    // else
-    // {
-    //     chessboard.input_clipboard(str.substr(0, 194));
-    // }
+
+    chessboard.clear();  
 
     while (window.isOpen())
     {
@@ -1930,20 +1926,43 @@ int main()
             {
                 chessboard.clear(); 
                 window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                window.draw(back_ground);
+                for (int i = 0; i < 8; i++)
+                    for (int j = 0; j < 8; j++)
+                        window.draw(cells[i][j]);
+                chessboard.display(window);
+                turn = 0;
+                continue;
+            }
+
+            if (input_point == now)
+            {
+                str = sf::Clipboard::getString();
+
+                if (str != "")
+                {
+
+                    chessboard.input_clipboard(str);
+
+                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
                     window.draw(back_ground);
                     for (int i = 0; i < 8; i++)
                         for (int j = 0; j < 8; j++)
                             window.draw(cells[i][j]);
-                chessboard.display(window);
-                turn = 0;
-                continue;
+                    chessboard.display(window);
+                    window.draw(printText(str, font, status_text));
+                    
+                    turn = (str[0] == 'W' ? 0 : 1);
+
+                    continue;
+                }
             }
 
             if (chessboard.chessBoard[y][x] -> getIsInit() == true)
             {
                 Point p0(y, x);
 
-                if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()))
+                if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()) || (y == input_point.row() && input_point.column()))
                 {
                     // printf("x0: %i,  y0: %i,  turn: %i\n", x, y, turn);
                     sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
@@ -1980,6 +1999,7 @@ int main()
                     }
 
                     window.draw(clr);
+                    window.draw(input_booten);
                     window.draw(which_mohre);
 
                     int turn_who = (turn % 2 == 0 ? 1 : -1);
@@ -2039,7 +2059,30 @@ int main()
                                 break;
                             }
 
-                            if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()))
+                            if (input_point == p1)
+                            {
+                                str = sf::Clipboard::getString();
+
+                                if (str != "")
+                                {
+
+                                    chessboard.input_clipboard(str);
+
+                                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                    window.draw(back_ground);
+                                    for (int i = 0; i < 8; i++)
+                                        for (int j = 0; j < 8; j++)
+                                            window.draw(cells[i][j]);
+                                    chessboard.display(window);
+                                    window.draw(printText(str, font, status_text));
+                                    
+                                    turn = (str[0] == 'W' ? 0 : 1);
+
+                                    break;
+                                }
+                            }
+
+                            if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column() == x) || (y == input_point.row() && input_point.column() == x))
                             {
                                 p0 = p1;
 
@@ -2063,6 +2106,29 @@ int main()
                                     chessboard.display(window);
                                     turn = 0;
                                     break;
+                                }
+
+                                if (input_point == p1)
+                                {
+                                    str = sf::Clipboard::getString();
+
+                                    if (str != "")
+                                    {
+
+                                        chessboard.input_clipboard(str);
+
+                                        window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                        window.draw(back_ground);
+                                        for (int i = 0; i < 8; i++)
+                                            for (int j = 0; j < 8; j++)
+                                                window.draw(cells[i][j]);
+                                        chessboard.display(window);
+                                        window.draw(printText(str, font, status_text));
+                                        
+                                        turn = (str[0] == 'W' ? 0 : 1);
+
+                                        break;
+                                    }
                                 }
 
                                 sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
@@ -2096,6 +2162,7 @@ int main()
                                 }
 
                                 window.draw(clr);
+                                window.draw(input_booten);
                                 window.draw(which_mohre);
 
                                 int turn_who = (turn % 2 == 0 ? 1 : -1);
@@ -2146,6 +2213,7 @@ int main()
 
         chessboard.display(window);
         window.draw(clr);
+        window.draw(input_booten);
 
         int turn_who = (turn % 2 == 0 ? 1 : -1);
         if (chessboard.kish(turn_who))
@@ -2165,6 +2233,7 @@ int main()
                 window.draw(printTextKishorMat(font, status_text, 1));
         }
 
+        window.draw(input_booten);
         window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
         window.display(); // out pot the buffer
     }
