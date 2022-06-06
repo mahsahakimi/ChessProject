@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/mahsa/AP Project/faz2/Src/test5.cpp" "/home/mahsa/AP Project/faz2/CMakeFiles/x.dir/Src/test5.cpp.o"
+  "/home/mahsa/AP Project/faz2/test/Chess.cpp" "/home/mahsa/AP Project/faz2/test/CMakeFiles/ChessGame.dir/Chess.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

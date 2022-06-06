@@ -1,9 +1,7 @@
-// main.cpp
-    // main func
 #include <iostream>
-using namespace std;
-
+#include <string>
 #include <iomanip>
+using namespace std;
 
 #include <SFML/Graphics.hpp>
 using namespace sf;
@@ -47,10 +45,10 @@ public:
 
     Point(int y = 0, int x = 0) // y, x init current address "Norm"
     {
-        if (!(0 <= x && x < 8))
-            cout << "\nx = " << x << " is invalid!\n";
-        if (!(0 <= y && y < 8))
-            cout << "\ny = " << y << " is invalid!\n";
+        // if (!(0 <= x && x < 8))
+        //     cout << "\nx = " << x << " is invalid!\n";
+        // if (!(0 <= y && y < 8))
+        //     cout << "\ny = " << y << " is invalid!\n";
         this -> mem_x = x;
         this -> mem_y = y;
     };
@@ -92,6 +90,9 @@ private:
     Point currentAddress; // current address: (row, column)
 
 public:
+    sf::RectangleShape* graph_mohre;
+    sf::Texture* mem_mohre_texture;
+
     char type; // type of Mohre
     char color; // color of Mohre
     bool isInit; // if Mohre initialized is true; else false.
@@ -102,7 +103,7 @@ public:
     int imageAttacks[8][8]; // noghat morede tahdid
     void(*funcImageAttacks)(int imageAttacks[8][8], Point currentAddress); // the func for update image attacks
     
-    Mohre(int y_formal = 0, int x_formal = 0, char type_formal = '-', char color_formal = '-') // init current address
+    Mohre(int y_formal = 0, int x_formal = 0, char type_formal = '-', char color_formal = '-', string pic_add = "-") // init current address
     {
         for (int i = 0; i < 8; i++) // set deafult singleMoves and imageAttacks
             for (int j = 0; j < 8; j++)
@@ -123,6 +124,19 @@ public:
             isInit = false;
         else
             isInit = true;
+
+        if (isInit)
+        {
+            int i1 = y_formal, j1 = x_formal;
+
+            graph_mohre = new  sf::RectangleShape(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+            graph_mohre -> setOrigin(45.0f, 45.0f); // set the center of MOHRE
+            graph_mohre -> setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+            graph_mohre -> setFillColor((color_formal == 'W' ? sf::Color(0, 250, 0) : sf::Color(0, 0, 250)));
+
+            mem_mohre_texture = new sf::Texture;
+            mem_mohre_texture -> loadFromFile(pic_add);
+        }
     };
 
     Point getCurrentAddress() // get Current Address
@@ -189,6 +203,7 @@ public:
         ::existMohre[newAddress.row()][newAddress.column()] = (this -> color == 'W' ? 1 : (this -> color == 'B' ? -1 : 0));
 
         currentAddress = newAddress; // Update currentAddress
+        (*graph_mohre).setPosition((float)(7.5f + 50.0f + (105*newAddress.column())), (float)(7.5f + 50.0f + (105*newAddress.row())));
         update();
     };
 
@@ -254,6 +269,12 @@ public:
         counter++;
         return pointPtr;
     };
+
+    void show(sf::RenderWindow& window)
+    {
+        (*graph_mohre).setTexture(&(*mem_mohre_texture));
+        window.draw((*graph_mohre));
+    };
 };
 
 class Pawn : public Mohre // Sarbaz
@@ -298,7 +319,7 @@ public:
     };
 
     Pawn(int y, int x, char color_formal)
-        : Mohre(y, x, 'P', color_formal) // set current address
+        : Mohre(y, x, 'P', color_formal, "./images/pawn.jpg") // set current address
     {
         Mohre::setSingleMove(pawnSingleMove);
         Mohre::setImageAttacks(pawnImageAttacks);
@@ -387,7 +408,7 @@ public:
     };
 
     Knight(int y, int x, char color_formal)
-        : Mohre(y, x, 'N', color_formal) // set current address
+        : Mohre(y, x, 'N', color_formal, "./images/knight.jpg") // set current address
     {
         Mohre::setSingleMove(knightSingleMove);
         Mohre::setImageAttacks(knightImageAttacks);
@@ -526,7 +547,7 @@ public:
     };
 
     Queen(int y, int x, char color_formal)
-        : Mohre(y, x, 'Q', color_formal) // set current address
+        : Mohre(y, x, 'Q', color_formal, "./images/queen.jpg") // set current address
     {
         Mohre::setSingleMove(queenSingleMove);
         Mohre::setImageAttacks(queenImageAttacks);
@@ -609,7 +630,7 @@ public:
     };
 
     Bishop(int y, int x, char color_formal)
-        : Mohre(y, x, 'B', color_formal) // set current address
+        : Mohre(y, x, 'B', color_formal, "./images/bishop.jpeg") // set current address
     {
         Mohre::setSingleMove(bishopSingleMove);
         Mohre::setImageAttacks(bishopImageAttacks);
@@ -692,7 +713,7 @@ public:
     };
 
     Rook(int y, int x, char color_formal)
-        : Mohre(y, x, 'R', color_formal) // set current address
+        : Mohre(y, x, 'R', color_formal, "./images/rook.jpg") // set current address
     {
         Mohre::setSingleMove(rookSingleMove);
         Mohre::setImageAttacks(rookImageAttacks);
@@ -759,7 +780,7 @@ public:
     };
 
     King(int y, int x, char color_formal)
-        : Mohre(y, x, 'K', color_formal) // set current address
+        : Mohre(y, x, 'K', color_formal, "./images/king.jpg") // set current address
     {
         Mohre::setSingleMove(kingSingleMove);
         Mohre::setImageAttacks(kingImageleAttacks);         
@@ -897,6 +918,58 @@ public:
             }; 
     };
 
+    void input_clipboard(string str) // Set Blocks 
+    {
+        char typ, clr;
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+            {
+                typ = str[3 + (i)*24 + j*3];
+                clr = str[4 + (i)*24 + j*3];
+               
+                if ( typ == 'R')
+                {
+                    Rook* R = new Rook(i, j, clr);
+                    chessBoard[i][j] = R;
+                }
+                else if ( typ == 'N')
+                {
+                    Knight* N = new Knight(i, j, clr);
+                    chessBoard[i][j] = N;
+                }
+                else if ( typ == 'B')
+                {
+                    Bishop* B = new Bishop(i, j, clr);
+                    chessBoard[i][j] = B;
+                }
+                else if ( typ == 'Q')
+                {
+                    Queen *Q = new Queen(i, j, clr);
+                    chessBoard[i][j] = Q;
+                }
+                else if ( typ == 'K')
+                {
+                    King *K = new King(i, j, clr);
+                    chessBoard[i][j] = K;
+                    if (clr == 'W')
+                        whiteKing = K;
+                    else if (clr == 'B')
+                        blackKing = K;
+                }
+                else if ( typ == 'P')
+                {
+                    Pawn *P = new Pawn(i, j, clr);
+                    chessBoard[i][j] = P;
+                }
+                else if ( typ == '-')
+                {
+                    Mohre* m = new Mohre(i, j, clr);
+                    chessBoard[i][j] = m;
+                };
+            }; 
+    };
+
+  
     void updateAll(int row = 8, int column = 8)
     {
         for (int i = 0; i < row; i++)
@@ -1125,546 +1198,100 @@ public:
                 if (chessBoard[i][j] -> isInit == true)
                     chessBoard[i][j] -> details();
     };
-};
 
-Point** ans_point;
-int* ans_Bool;
-int counter_ans;
-
-/*
-step0 = makan avalie, harekat 1m ma [64] (test all)
-step1 = harekat 1m harif (be eza har harkat) [64]
-step2 = harekat 2m ma [64] -> (bayad oono kish kone)
-step3 = harekat 2m harif (shah harif kish va harekati nabayad
-                          vojod dashte bashe bara shah va be eza
-                          har harekat baghie mohrehash kish raf nashe!)
-*/
-int Mate(int player1, const char* lcb, int step = 0) // arry of last chess board
-{
-    ChessBoard ccb; // current chess Board
-    ccb.inputChessBoard(lcb); // create new current chessBoard from last chess board
-    ccb.updateAll();   
-
-    if (ccb.kish(player1) == false) // shah kish nist
+    void display(sf::RenderWindow& win)
     {
-        if (step >= 3)
-            return 2;
-        
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
-                if (((ccb.chessBoard[i][j] -> color) == (player1 == 1 ? 'W' : 'B')) && (ccb.chessBoard[i][j] -> type != '-')) // entekhab mohre ma
-                {        
-                    ccb.inputChessBoard(lcb);                
-                    ccb.updateAll();
-                    Point** moves = ccb.chessBoard[i][j] -> getSingleMoves();
-
-                    for (int counter = 0; moves[counter] != 0; counter++) // harekat oon Mohre moshakhas
-                    {
-                        Point p0 = ccb.chessBoard[i][j]-> getCurrentAddress(); // now address
-                        Point p = *moves[counter]; // next address     
-                        
-                        ccb.chessBoard[i][j]->doMove(p); // (p0 -> p)
-                        ccb.move(p0, p); // (p0 -> p)
-                        
-                        if (ccb.kish(player1) == true) // ba in harekat shah khodemon kish shode! -> amal maakos
-                        {
-                            ccb.inputChessBoard(lcb);
-                            ccb.updateAll();
-                            continue;
-                        };
-                        
-                        ccb.updateAll();
-
-                        if (step == 0) // step0 = makan avalie, harekat 1m ma (test all)
-                        {
-                            ::ans_point[0][::counter_ans] = p0;
-                            ::ans_point[1][::counter_ans] = p;
-                        };
-                        if (step == 1) // step1 = harekat 1m harif (be eza har harkat)
-                            ::ans_point[2][::counter_ans] = p;
-                        if (step == 2) // step2 = harekat 2m ma -> (bayad oono kish kone)
-                        {
-                            if (ccb.kish(-player1) == false) // agar oon ro kish nakard, bro harekat baadi
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;
-                            }              
-                            else
-                                ::ans_point[3][::counter_ans] = p;                      
-                        };
-
-                        if (step <= 3)
-                                ans_Bool[::counter_ans] = 0;
-                            else 
-                                return step -1; 
-                        
-                        int s = Mate(-player1, ccb.returnChessBoard(), step + 1);                        
-
-                        switch (step)
-                        {
-                        case 0:
-                            if (ans_Bool[::counter_ans] == 1)
-                                ::counter_ans++;
-                        break;
-                        case 1:   
-                            if (ans_Bool[::counter_ans] != 1)
-                                return 0;
-                            break; 
-                        case 2:
-                            if (ans_Bool[::counter_ans] == 1)
-                                return 1;
-                            break;
-                        default:
-                            if(step >= 3)
-                                if (::ans_Bool[::counter_ans] != 1)
-                                    return 2;
-                        break;
-                        }
-
-                        if (s < step)
-                            return s;
-                        ccb.inputChessBoard(lcb);
-                        ccb.updateAll();
-                    };
-                    ccb.inputChessBoard(lcb);
-                    ccb.updateAll();
-                };
-            ccb.inputChessBoard(lcb);
-            ccb.updateAll();
+                if (chessBoard[i][j]->getIsInit())
+                    chessBoard[i][j] -> show(win);
     }
-    else // shah kish hast
-    {
-        for (int i = 0; i < 8; i++)
-                for (int j = 0; j < 8; j++)
-                    if (((ccb.chessBoard[i][j] -> color) == (player1 == 1 ? 'W' : 'B')) && (ccb.chessBoard[i][j] -> type != '-')) // entekhab mohre ma
-                    {                        
-                        ccb.inputChessBoard(lcb);
-                        ccb.updateAll();
-                        Point** moves = ccb.chessBoard[i][j] -> getSingleMoves();
-
-                        for (int counter = 0; moves[counter] != 0; counter++) // harekat oon Mohre moshakhas
-                        {
-                            Point p0 = ccb.chessBoard[i][j]-> getCurrentAddress(); // now address
-                            Point p = *moves[counter]; // next address
-                            
-                            ccb.chessBoard[i][j]->doMove(p); // (p0 -> p)
-                            ccb.move(p0, p); // (p0 -> p)
-                            
-                            if (ccb.kish(player1) == true) // ba in harekat shah khodemon kish shode! -> amal maakos
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;
-                            };
-                            
-                            ccb.updateAll();
-
-                            if (step == 0) // step0 = makan avalie, harekat 1m ma (test all)
-                            {
-                                ::ans_point[0][::counter_ans] = p0;
-                                ::ans_point[1][::counter_ans] = p;
-                            };
-                            if (step == 1) // step1 = harekat 1m harif (be eza har harkat)
-                                ::ans_point[2][::counter_ans] = p;
-                            if (step == 2) // step2 = harekat 2m ma -> (bayad oono kish kone)
-                            {
-                                if (ccb.kish(-player1) == false) // agar oon ro kish nakard, bro harekat baadi
-                                {
-                                    ccb.inputChessBoard(lcb);
-                                    ccb.updateAll();
-                                    continue;
-                                }              
-                                else
-                                    ::ans_point[3][::counter_ans] = p;                      
-                            };
-
-                            if (step <= 3)
-                                ans_Bool[::counter_ans] = 0;
-                            else 
-                                return 2;   
-                            
-                            int s = Mate(-player1, ccb.returnChessBoard(), step + 1);
-
-                            switch (step)
-                            {
-                            case 0:
-                                if (ans_Bool[::counter_ans] == 1)
-                                    ::counter_ans++;
-                                break;
-                            case 1:   
-                                if (ans_Bool[::counter_ans] != 1)
-                                    return 0;
-                                break; 
-                            case 2:
-                                if (ans_Bool[::counter_ans] == 1)
-                                    return 1;
-                                break;
-                            default:
-                                if(step >= 3)
-                                    if (::ans_Bool[::counter_ans] != 1)
-                                        return 2;
-                            break;
-                            }
-                            
-                            if (s < step)
-                                return s;
-
-                            ccb.inputChessBoard(lcb);
-                            ccb.updateAll();
-                        };
-                        ccb.inputChessBoard(lcb);
-                        ccb.updateAll();
-                    };
-        ccb.inputChessBoard(lcb);
-        ccb.updateAll();
-    }
-
-    ccb.inputChessBoard(lcb);
-    ccb.updateAll();
-
-    if (ccb.kish(player1) == true && step % 2 != 0 )
-    {
-        ::ans_Bool[::counter_ans] = 1;
-            return 1;
-    }
-    else 
-        return step - 1;
 };
 
-/*
-step0 = makan avalie, harekat 1m ma [64] (test all)
-step1 = harekat 1m harif (vojod) [64]
-step2 = harekat 2m ma [64] -> (be eza har harekat)
-step3 = harekat 2m harif (vojod & kish kone)
-step4 = (shah ma kish va harekati nabayad
-        vojod dashte bashe bara shah va be eza
-        har harekat baghie mohrehamon kish raf nashe!)
-*/
-int Defence(int player1, const char* lcb, int step = 0)
+Point** getSingleMoves2(const char* lcb, Point p0, int player1)
+{
+    ChessBoard ccb;
+    ccb.inputChessBoard(lcb);
+    ccb.updateAll();
+    
+    Point** sm = ccb.chessBoard[p0.row()][p0.column()]->getSingleMoves();
+
+    int counter = 0;
+    Point** pointPtr = new Point*[64];
+
+    for (int i = 0; sm[i] != 0; i++)
+    {
+        ccb.inputChessBoard(lcb);
+        ccb.updateAll();
+
+        Point p1 = *sm[i];
+        ccb.chessBoard[p0.row()][p0.column()] -> doMove(p1);
+        ccb.move(p0, p1);
+
+        if (ccb.kish(player1) == false)
+        {
+            pointPtr[counter] = sm[i];
+            counter++;
+        }
+    }
+    pointPtr[counter] = 0;
+    counter++;
+    return pointPtr;
+}
+
+sf::Text printText(std::string massege, sf::Font font, sf::Text status_text)
+{
+    font.loadFromFile("../Resources/Fonts/PinaColadaCreation.ttf");
+
+    status_text.setFont(font);
+
+    int j = 7, i = 0;
+    j = 7.5f + 50.0f + (105*j) + 63, i = 7.5f + 50.0f + (105*i) - 40;
+
+    const int size = 40;
+    status_text.setCharacterSize(size);
+    status_text.setStyle(sf::Text::Bold);
+    status_text.setFillColor(sf::Color::Black);
+    status_text.setPosition(j, i);
+    status_text.setString(massege);
+    return status_text;
+}
+
+sf::Text printTextKishorMat(sf::Font font, sf::Text status_text, int type) // 1: kish, -1: mat
+{
+    std::string str = (type == 1 ? "Kish!" : "Mate!");
+
+    font.loadFromFile("../Resources/Fonts/PinaColadaCreation.ttf");
+
+    status_text.setFont(font);
+
+    int j = 7, i = 1;
+    j = 7.5f + 50.0f + (105*j) + 95, i = 7.5f + 50.0f + (105*i) - 70;
+
+    const int size = 60;
+    status_text.setCharacterSize(size);
+    status_text.setStyle(sf::Text::Bold);
+    status_text.setFillColor(sf::Color::Black);
+    status_text.setPosition(j, i);
+    status_text.setString(str);
+    return status_text;
+}
+
+bool mat(const char* lcb, int player)
 {
     ChessBoard ccb;
     ccb.inputChessBoard(lcb);
     ccb.updateAll();
 
-            // KISH NIST
-    if (ccb.kish(player1) == false)
-    {
-        if (step >= 4)
-            return 2;
-
-        for (int i = 0; i < 8; i++)
-                for (int j = 0; j < 8; j++)
-                    if (((ccb.chessBoard[i][j] -> color) == (player1 == 1 ? 'W' : 'B')) && (ccb.chessBoard[i][j] -> type != '-'))
-                    {
-                        Point** moves = ccb.chessBoard[i][j] -> getSingleMoves();
-                        for (int counter = 0; moves[counter] != 0; counter++)
-                        {
-                            Point p0 = ccb.chessBoard[i][j]-> getCurrentAddress(); // current address
-                            Point p = *moves[counter]; // next address
-                            
-                            ccb.chessBoard[i][j]->doMove(p); // (p0 -> p)
-                            ccb.move(p0, p); // (p0 -> p)
-                            
-                            if (ccb.kish(player1) == true) // ba in harekat shah khodemon kish shode! -> amal maakos.
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;
-                            };
-
-                            if (step == 0)
-                            {
-                                ::ans_point[0][::counter_ans] = p0;
-                                ::ans_point[1][::counter_ans] = p;
-                            }
-                            if (step == 1)
-                                ::ans_point[2][::counter_ans] = p;
-                            if (step == 2)
-                                ::ans_point[3][::counter_ans] = p;
-                            if (step == 3 && ccb.kish(-player1) == false) // (bayad maro kish kone)
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;                             
-                            };
-                            if (step <= 4)
-                                ans_Bool[::counter_ans] = 0;
-                            else 
-                                return step -1;
-
-                            int s = Defence(-player1, ccb.returnChessBoard(), step + 1);
-
-                            if (step == 0 && ans_Bool[::counter_ans] == 1)
-                            {
-                                ::counter_ans++;
-                            };
-                            if (step == 1 && ans_Bool[::counter_ans] == 1)
-                                return 0;
-                            if (step == 2)
-                            {
-                                if (::ans_Bool[::counter_ans] != 1)
-                                    return 1;
-                            }
-                            if (step == 3 && ans_Bool[::counter_ans] == 1)
-                                return 2;
-
-                            if (s < step)
-                                return s;
-
-                            ccb.inputChessBoard(lcb);
-                            ccb.updateAll();
-                        }
-                        delete[] moves;
-                    }
-        return step - 1;
-    }
-            // KISH HAST
-    else
-    {
-                                // RAFE KISH
-
-        for (int i = 0; i < 8; i++)
-                for (int j = 0; j < 8; j++)
-                    if (((ccb.chessBoard[i][j] -> color) == (player1 == 1 ? 'W' : 'B')) && (ccb.chessBoard[i][j] -> type != '-'))
-                    {
-                        Point** moves = ccb.chessBoard[i][j] -> getSingleMoves();
-                        for (int counter = 0; moves[counter] != 0; counter++)
-                        {
-                            Point p0 = ccb.chessBoard[i][j]-> getCurrentAddress(); // current address
-                            Point p = *moves[counter]; // next address
-                            
-                            ccb.chessBoard[i][j]->doMove(p); // (p0 -> p)
-                            ccb.move(p0, p); // (p0 -> p)
-                            
-                            if (ccb.kish(player1) == true) // ba in harekat shah khodemon kish shode! -> amal maakos.
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;
-                            }
-                            else
-                            {
-                                if (step > 4)
-                                    return 2;
-                            }
-
-                            if (step == 0)
-                            {
-                                ::ans_point[0][::counter_ans] = p0;
-                                ::ans_point[1][::counter_ans] = p;
-                            }
-                            if (step == 1)
-                                ::ans_point[2][::counter_ans] = p;
-                            if (step == 2)
-                                ::ans_point[3][::counter_ans] = p;
-                            if (step == 3 && ccb.kish(-player1) == false) // (bayad maro kish kone)
-                            {
-                                ccb.inputChessBoard(lcb);
-                                ccb.updateAll();
-                                continue;                             
-                            };
-
-                            int s = Defence(-player1, ccb.returnChessBoard(), step + 1);
-
-                            if (step == 0 && ans_Bool[::counter_ans] == 1)
-                            {
-                                ::counter_ans++;
-                            };
-                            if (step == 1 && ans_Bool[::counter_ans] == 1)
-                                return 0;
-                            if (step == 2)
-                            {
-                                if (::ans_Bool[::counter_ans] != 1)
-                                    return 1;
-                            }
-                            if (step == 3 && ans_Bool[::counter_ans] == 1)
-                                return 2;
-
-                            if (s < step)
-                                return s;
-
-                            ccb.inputChessBoard(lcb);
-                            ccb.updateAll();
-                        }
-                        delete[] moves;
-                    }
-                                // MAT
-            if (ccb.kish(player1) == true && step % 2 == 0)
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+            if (ccb.chessBoard[i][j] -> getIsInit() == true && ccb.chessBoard[i][j] -> getColor() == (player == 1 ? 'W' : 'B'))
             {
-                ::ans_Bool[::counter_ans] = 1;
-                return 2;
+                Point** m = getSingleMoves2(lcb, Point(i, j), player);
+                if (m[0] != 0)
+                    return false;
             }
-            else if (step > 4 && ccb.kish(player1) == false)
-                return 3;
-            else
-                return step - 1;
-    }
-    return step - 1;
-};
-
-void set()
-{
-    ::ans_point = new Point*[4];
-    for (int i = 0; i < 4; i++)
-        ::ans_point[i] = new Point[64];
-
-    ans_Bool = new int[64];
-    fill_n(::ans_Bool, 64, 0); // set the ans bool!
-
-    ::counter_ans = 0;
-}
-
-void clean()
-{
-    for (int i = 0; i < 4; i++)
-        delete[] ::ans_point[i];
-    delete[] ::ans_point;
-
-    delete[] ::ans_Bool;
-}
-
-void play_game()
-{
-    set(); // set deafult to statrt game
-
-    char which_player, type_game; // Input stat of start
-    cin >> which_player >> type_game;
-    int player1 = (which_player == 'W' ? 1 : -1);
-
-    ChessBoard chessBoard; // create chess board
-    chessBoard.input(); // set chessBoard
-    chessBoard.updateAll(); // update chess board
-    // chessBoard.print(); // print chessBoard (not imp)
-    // chessBoard.printDangerForBlack(); // print Danger For Black (not imp)
-    // chessBoard.printDangerForWhite(); // print Danger For White (not imp)
-    // chessBoard.statOfAll(); // print status of all (not imp)
-
-    const char* backUp = chessBoard.returnChessBoard();
-    // cout << "\n^^^^^^^^^^^^^^^^^^^^^^^^^^\nThe Game Started! \n\n";
-    if (type_game == 'M')
-        Mate(player1, chessBoard.returnChessBoard(), 0);
-    else
-        Defence(player1, chessBoard.returnChessBoard(), 0);
-
-    // cout << "\nThe Game ended! \n\nans: \n";
-    chessBoard.inputChessBoard(backUp); // undo
-
-    // cout << "counter ans: " << counter_ans << endl;
-    string ans[::counter_ans];
-    fill_n(ans, ::counter_ans, "");
-
-    int ans_frq[::counter_ans];
-    fill_n(ans_frq, ::counter_ans, 0);
-
-    int i_fin = 0;
-    string ans_fin[::counter_ans];
-    fill_n(ans_fin, ::counter_ans, "");
-
-    int ans_fin_frq[::counter_ans];
-    fill_n(ans_fin_frq, ::counter_ans, 0);
-
-    if (counter_ans == 0)
-    {
-        cout << "No Answer!";
-        exit(0);
-    }
-    else
-    {
-        for (int i = 0; i <= counter_ans; i++)
-        {
-            int row = ::ans_point[0][i].row();
-            int column = ::ans_point[0][i].column();
-
-            // if (ans_Bool[i] == 1)
-            //     cout << ::ans_point[0][i] << chessBoard.chessBoard[row][column]->getType() << chessBoard.chessBoard[row][column]->getColor() << ans_point[1][i] << '\n';
-            
-            if (ans_Bool[i] == 1)
-            {
-                Point** moves = chessBoard.chessBoard[row][column] -> getSingleMoves();
-                int x = 0;
-                for (; moves[x] != 0; x++);
-                ans_frq[i] = x;
-
-                ans[i] += char(::ans_point[0][i].column() + int('a'));
-                ans[i] += char(int('0') + 8 - ::ans_point[0][i].row());
-                ans[i] += chessBoard.chessBoard[row][column]->getType();
-                ans[i] += chessBoard.chessBoard[row][column]->getColor();
-                ans[i] += char(::ans_point[1][i].column() + int('a'));
-                ans[i] += char(int('0') + 8 - ::ans_point[1][i].row());
-
-                if (i == 0)
-                {
-                    ans_fin[0] = ans[0];
-                    ans_fin_frq[0]++;
-                }
-                else if (ans[i].substr(0, 4) == ans_fin[i_fin].substr(0, 4))
-                    ans_fin_frq[i_fin]++;
-                else if (ans[i].substr(0, 4) != ans_fin[i_fin].substr(0, 4))
-                {
-                    i_fin++;
-                    ans_fin[i_fin] = ans[i];
-                    ans_fin_frq[i_fin]++;
-                }
-            }
-        }
-    }
-
-    clean(); // clean code to new set
-
-    int i_end = 0;
-    string ans_end[::counter_ans];
-    fill_n(ans_end, ::counter_ans, "");
-    
-    int i = 0;
-    while (i < counter_ans)
-    {
-        int itsFrqIn = ans_frq[i];
-        int MaxFrq;
-
-        for (int j = 0; j <= i_fin; j++)
-            if (ans_fin[j].substr(0, 4) == ans[i].substr(0, 4))
-                MaxFrq = ans_fin_frq[j];
-        if (itsFrqIn == MaxFrq)
-        {
-            ans_end[i_end] = ans[i].substr(0, 4);
-            i++;
-            while (ans_end[i_end] == ans[i].substr(0, 4))
-            {
-                i++;
-            }
-            if (i_end + 1 < ::counter_ans)
-                i_end++;
-        }
-        else
-        {
-            ans_end[i_end] = ans[i];
-            i++;
-            while (ans_end[i_end].substr(0, 4) == ans[i].substr(0, 4))
-            {
-                i_end++;
-                ans_end[i_end] = ans[i];
-                i++;
-            }
-            if (i_end + 1 < ::counter_ans)
-                i_end++;
-        }
-    }
-
-    for (int i = 0; i <= i_end; i++);
-
-    // cout << endl << " ll";
-    for (int i = 0; i <= i_end; i++)
-        for (int j = i + 1; j <= i_end; j++)
-            if (ans_end[j] < ans_end[i])
-            {
-                string tmp = ans_end[i];
-                ans_end[i] = ans_end[j];
-                ans_end[j] = tmp;
-            }
-    for (int i = 0; i <= i_end; i++)
-        if (ans_end[i] != "")
-            cout << ans_end[i] << '\n';
+    return true;
 }
 
 int main()
@@ -1676,9 +1303,422 @@ int main()
             ::dangerForWhite[i][j] = 0;
             ::dangerForBlack[i][j] = 0; 
         }
+    
+    int turn = 0; // odd: turn black
+                  // even: turn white
 
-    
-    
+    int window_height = 850 + 200, window_width = 850;
+    float cell_size = 100.0f;
+
+    sf::RenderWindow window (sf::VideoMode(window_height, window_width), "Chess", sf::Style::Close | sf::Style::Titlebar); // creat window
+    window.setFramerateLimit(8);
+
+    sf::Font font;
+    sf::Text status_text;
+
+    sf::RectangleShape back_ground (sf::Vector2f(845 + 200, 845)); // create a shape
+    back_ground.setFillColor(sf::Color(0, 0, 128)); // color the shape //128, 200
+    back_ground.setOrigin(845 / 2 + 100, 845 / 2); // set the center of shape
+    back_ground.setPosition(window_height / 2, window_width / 2); // set the start of shepe
+
+    sf::RectangleShape cells[8][8];
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
+        {
+            sf::RectangleShape cell (sf::Vector2f(cell_size, cell_size)); // create a shape
+            if (i % 2 == j % 2)
+                cell.setFillColor(sf::Color(0, 0, 0)); // color the shape
+            else
+                cell.setFillColor(sf::Color(0, 0, 28)); // color the shape
+
+            cell.setOrigin(cell_size / 2, cell_size / 2); // set the center of shape
+            cell.setPosition((cell_size / 2) + (i*105) + 7.5f, (cell_size / 2) + (j*105) + 7.5f); // set the start of shepe
+            cells[i][j] = cell;
+        }
+
+    int i1 = 7, j1 = 8;
+    Point clr_point(i1, j1);
+    sf::RectangleShape clr(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+    clr.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+    clr.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+    sf::Texture clr_texture; // set photo
+    clr_texture.loadFromFile("./images/return.png");
+    clr.setTexture(&clr_texture);
+    // clr.setFillColor(sf::Color::Yellow);
+
+    int i2 = 7, j2 = 9;
+    Point input_point(i2, j2);
+    sf::RectangleShape input_booten(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+    input_booten.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+    input_booten.setPosition(7.5f + 50.0f + (105*j2), 7.5f + 50.0f + (105*i2)); // set the start of MOHRE
+    sf::Texture input_booten_texture; // set photo
+    input_booten_texture.loadFromFile("./images/input.png");
+    input_booten.setTexture(&input_booten_texture);
+
+    ChessBoard chessboard;
+    std::string str;
+
+    chessboard.clear();  
+
+    while (window.isOpen())
+    {
+        sf::Event evnt; // create event
+        while (window.pollEvent(evnt))
+        {
+            switch (evnt.type)
+            {
+            case sf::Event::Closed: // if tap the botten X
+                window.close();
+                exit(0);
+                break;
+            }
+        }
+        
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) // move the shape by mouse
+        {
+            // x = column, y = row
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            int x = mousePos.x, y = mousePos.y;
+            x = (x - 7.5) / (cell_size + 5), y = (y - 7.5) / (cell_size + 5);    
+
+            Point now(y, x);
+            if (clr_point == now)
+            {
+                chessboard.clear(); 
+                window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                window.draw(back_ground);
+                for (int i = 0; i < 8; i++)
+                    for (int j = 0; j < 8; j++)
+                        window.draw(cells[i][j]);
+                chessboard.display(window);
+                turn = 0;
+                continue;
+            }
+
+            if (input_point == now)
+            {
+                str = sf::Clipboard::getString();
+
+                if (str != "")
+                {
+
+                    chessboard.input_clipboard(str);
+
+                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                    window.draw(back_ground);
+                    for (int i = 0; i < 8; i++)
+                        for (int j = 0; j < 8; j++)
+                            window.draw(cells[i][j]);
+                    chessboard.display(window);
+                    window.draw(printText(str, font, status_text));
+                    
+                    turn = (str[0] == 'W' ? 0 : 1);
+
+                    // play_game(turn, str[1], chessboard.returnChessBoard());
+                    // for (int i = 0; i < ::counter_ans; i++)
+                    //     cout << ans_point[0][i] << ans_point[1][i] << '\n' << flush;
+
+                    continue;
+                }
+            }
+
+            if (chessboard.chessBoard[y][x] -> getIsInit() == true)
+            {
+                Point p0(y, x);
+
+                if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column()) || (y == input_point.row() && input_point.column()))
+                {
+                    // printf("x0: %i,  y0: %i,  turn: %i\n", x, y, turn);
+                    sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                    which_mohre.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                    which_mohre.setPosition(7.5f + 50.0f + (105*x), 7.5f + 50.0f + (105*y)); // set the start of MOHRE
+                    sf::Texture which_mohre_texture; // set photo
+                    which_mohre_texture.loadFromFile("./images/dot.png");
+                    which_mohre.setTexture(&which_mohre_texture);
+                    which_mohre.setFillColor(sf::Color::Magenta);
+
+                    chessboard.updateAll();
+                    Point** moves = getSingleMoves2(chessboard.returnChessBoard(), p0, (turn % 2 == 0 ? 1 : -1));
+
+                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                    window.draw(back_ground);
+                    for (int i = 0; i < 8; i++)
+                        for (int j = 0; j < 8; j++)
+                            window.draw(cells[i][j]);
+
+                    chessboard.display(window);
+
+                    for (int i = 0; moves[i] != 0; i++)
+                    {
+                        int i1 = (*moves[i]).row(), j1 = (*moves[i]).column();
+                        sf::RectangleShape dot(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                        dot.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                        dot.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+                        sf::Texture dot_texture; // set photo
+                        dot_texture.loadFromFile("./images/dot2.png");
+                        dot.setTexture(&dot_texture);
+                        int it_color = (chessboard.chessBoard[y][x] -> getColor() == 'W' ? 1 : -1);
+                        dot.setFillColor((::existMohre[i1][j1] == -it_color ? sf::Color::Red : sf::Color::White));
+                        window.draw(dot);
+                    }
+
+                    window.draw(clr);
+                    window.draw(input_booten);
+                    window.draw(which_mohre);
+
+                    int turn_who = (turn % 2 == 0 ? 1 : -1);
+                    int t = true;
+                    if (chessboard.kish(turn_who))
+                    {
+                        int i1 = (turn_who == 1 ? chessboard.whiteKing->row() : chessboard.blackKing->row()), j1 = (turn_who == 1 ? chessboard.whiteKing->column() : chessboard.blackKing->column());
+                        sf::RectangleShape danger_point(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                        danger_point.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                        danger_point.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+                        sf::Texture danger_point_texture; // set photo
+                        danger_point_texture.loadFromFile("./images/dot.png");
+                        danger_point.setTexture(&danger_point_texture);
+                        danger_point.setFillColor(sf::Color::Red);
+                        window.draw(danger_point);
+                        if (mat(chessboard.returnChessBoard(), turn_who))
+                        {
+                            window.draw(printTextKishorMat(font, status_text, -1));
+                            window.draw(printText((turn % 2 == 0 ? "Black Wins!" : "White Wins!"), font, status_text));
+                            t = false;
+                        }
+                        else
+                        {
+                            window.draw(printTextKishorMat(font, status_text, 1));
+                        }
+                    }
+                    if (t)
+                        window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
+                    window.display();
+
+
+                    bool tmp = true;
+                    while (tmp)
+                    {
+                        if (window.pollEvent(evnt) && evnt.type == sf::Event::Closed)
+                        {
+                                window.close();
+                                exit(0);
+                        }
+
+                        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                        {
+                            if (window.pollEvent(evnt) && evnt.type == sf::Event::Closed)
+                            {
+                                window.close();
+                                exit(0);
+                            }
+
+                            sf::Vector2i mousePos2 = sf::Mouse::getPosition(window);
+                            x = mousePos2.x, y = mousePos2.y;
+                            x = (x - 7.5) / (cell_size + 5), y = (y - 7.5) / (cell_size + 5);  
+                            Point p1(y, x);
+
+                            if (clr_point == p1)
+                            {
+                                chessboard.clear(); 
+                                window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                    window.draw(back_ground);
+                                    for (int i = 0; i < 8; i++)
+                                        for (int j = 0; j < 8; j++)
+                                            window.draw(cells[i][j]);
+                                chessboard.display(window);
+                                turn = 0;
+                                break;
+                            }
+
+                            if (input_point == p1)
+                            {
+                                str = sf::Clipboard::getString();
+
+                                if (str != "")
+                                {
+
+                                    chessboard.input_clipboard(str);
+
+                                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                    window.draw(back_ground);
+                                    for (int i = 0; i < 8; i++)
+                                        for (int j = 0; j < 8; j++)
+                                            window.draw(cells[i][j]);
+                                    chessboard.display(window);
+                                    window.draw(printText(str, font, status_text));
+                                    
+                                    turn = (str[0] == 'W' ? 0 : 1);
+
+                                    break;
+                                }
+                            }
+
+                            if ((((turn % 2 == 0 && chessboard.chessBoard[y][x] -> getColor() == 'W') || (turn % 2 == 1 && chessboard.chessBoard[y][x] -> getColor() == 'B')) && (y < 8 && x < 8)) || (y == clr_point.row() && clr_point.column() == x) || (y == input_point.row() && input_point.column() == x))
+                            {
+                                p0 = p1;
+
+                                chessboard.updateAll();
+                                moves = getSingleMoves2(chessboard.returnChessBoard(), p0, (turn % 2 == 0 ? 1 : -1));
+
+                                sf::Vector2i mousePos3 = sf::Mouse::getPosition(window);
+                                x = mousePos3.x, y = mousePos3.y;
+                                x = (x - 7.5) / (cell_size + 5), y = (y - 7.5) / (cell_size + 5);  
+                                Point p1_2(y, x);
+                                p1 = p1_2;
+
+                                if (clr_point == p1)
+                                {
+                                    chessboard.clear(); 
+                                    window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                        window.draw(back_ground);
+                                        for (int i = 0; i < 8; i++)
+                                            for (int j = 0; j < 8; j++)
+                                                window.draw(cells[i][j]);
+                                    chessboard.display(window);
+                                    turn = 0;
+                                    break;
+                                }
+
+                                if (input_point == p1)
+                                {
+                                    str = sf::Clipboard::getString();
+
+                                    if (str != "")
+                                    {
+
+                                        chessboard.input_clipboard(str);
+
+                                        window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                        window.draw(back_ground);
+                                        for (int i = 0; i < 8; i++)
+                                            for (int j = 0; j < 8; j++)
+                                                window.draw(cells[i][j]);
+                                        chessboard.display(window);
+                                        window.draw(printText(str, font, status_text));
+                                        
+                                        turn = (str[0] == 'W' ? 0 : 1);
+
+                                        break;
+                                    }
+                                }
+
+                                sf::RectangleShape which_mohre(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                                which_mohre.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                                which_mohre.setPosition(7.5f + 50.0f + (105*p0.column()), 7.5f + 50.0f + (105*p0.row())); // set the start of MOHRE
+                                sf::Texture which_mohre_texture; // set photo
+                                which_mohre_texture.loadFromFile("./images/dot.png");
+                                which_mohre.setTexture(&which_mohre_texture);
+                                which_mohre.setFillColor(sf::Color::Magenta);
+
+                                window.clear(sf::Color(0, 0, 0)); // clear the buffer
+                                window.draw(back_ground);
+                                for (int i = 0; i < 8; i++)
+                                    for (int j = 0; j < 8; j++)
+                                        window.draw(cells[i][j]);
+
+                                chessboard.display(window);
+
+                                for (int i = 0; moves[i] != 0; i++)
+                                {
+                                    int i1 = (*moves[i]).row(), j1 = (*moves[i]).column();
+                                    sf::RectangleShape dot(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                                    dot.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                                    dot.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+                                    sf::Texture dot_texture; // set photo
+                                    dot_texture.loadFromFile("./images/dot2.png");
+                                    dot.setTexture(&dot_texture);
+                                    int it_color = (chessboard.chessBoard[y][x] -> getColor() == 'W' ? 1 : -1);
+                                    dot.setFillColor((::existMohre[i1][j1] == -it_color ? sf::Color::Red : sf::Color::White));
+                                    window.draw(dot);
+                                }
+
+                                window.draw(clr);
+                                window.draw(input_booten);
+                                window.draw(which_mohre);
+
+                                int turn_who = (turn % 2 == 0 ? 1 : -1);
+                                bool f1640 = true;
+                                if (chessboard.kish(turn_who))
+                                {
+                                    int i1 = (turn_who == 1 ? chessboard.whiteKing->row() : chessboard.blackKing->row()), j1 = (turn_who == 1 ? chessboard.whiteKing->column() : chessboard.blackKing->column());
+                                    sf::RectangleShape danger_point(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+                                    danger_point.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+                                    danger_point.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+                                    sf::Texture danger_point_texture; // set photo
+                                    danger_point_texture.loadFromFile("./images/dot.png");
+                                    danger_point.setTexture(&danger_point_texture);
+                                    danger_point.setFillColor(sf::Color::Red);
+                                    window.draw(danger_point);
+                                    if (mat(chessboard.returnChessBoard(), turn_who))
+                                    {
+                                        window.draw(printTextKishorMat(font, status_text, -1));
+                                        window.draw(printText((turn % 2 == 0 ? "Black Wins!" : "White Wins!"), font, status_text));
+                                        f1640 = false;
+                                    }
+                                    else
+                                        window.draw(printTextKishorMat(font, status_text, 1));
+                                }
+                                if (f1640)
+                                    window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
+                                window.display();
+                            }
+                            for (int i = 0; moves[i] != 0; i++)
+                            {
+                                if (p1 == *moves[i])
+                                {
+                                    tmp = false;
+                                    chessboard.move(p0, p1);
+                                    turn++;
+                                    break;
+                                }
+                            } 
+                            // printf("x1: %i,  y1: %i,  turn: %i\n", x, y, turn);
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        window.clear(sf::Color(0, 0, 0)); // clear the buffer
+        window.draw(back_ground);
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                window.draw(cells[i][j]);
+
+        chessboard.display(window);
+        window.draw(clr);
+        window.draw(input_booten);
+
+        int turn_who = (turn % 2 == 0 ? 1 : -1);
+        bool f1695 = true;
+        if (chessboard.kish(turn_who))
+        {
+            int i1 = (turn_who == 1 ? chessboard.whiteKing->row() : chessboard.blackKing->row()), j1 = (turn_who == 1 ? chessboard.whiteKing->column() : chessboard.blackKing->column());
+            sf::RectangleShape danger_point(sf::Vector2f(90.0f, 90.0f)); // create a MOHRE
+            danger_point.setOrigin(45.0f, 45.0f); // set the center of MOHRE
+            danger_point.setPosition(7.5f + 50.0f + (105*j1), 7.5f + 50.0f + (105*i1)); // set the start of MOHRE
+            sf::Texture danger_point_texture; // set photo
+            danger_point_texture.loadFromFile("./images/dot.png");
+            danger_point.setTexture(&danger_point_texture);
+            danger_point.setFillColor(sf::Color::Red);
+            window.draw(danger_point);
+            if (mat(chessboard.returnChessBoard(), turn_who))
+            {
+                window.draw(printTextKishorMat(font, status_text, -1));
+                window.draw(printText((turn % 2 == 0 ? "Black Wins!" : "White Wins!"), font, status_text));
+                f1695 = false;
+            }
+            else
+                window.draw(printTextKishorMat(font, status_text, 1));
+        }
+
+        window.draw(input_booten);
+        if (f1695)
+            window.draw(printText((turn % 2 == 0 ? "White Turn" : "Black Turn"), font, status_text));
+        window.display(); // out pot the buffer
+    }
 
     return 0;
 }

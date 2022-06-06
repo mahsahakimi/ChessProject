@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = "/home/mahsa/AP Project/faz2/test"
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -77,6 +66,17 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named x
+# Target rules for targets named ChessGame
 
 # Build rule for target.
-x : cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 x
-.PHONY : x
+ChessGame: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ChessGame
+.PHONY : ChessGame
 
 # fast build rule for target.
-x/fast:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/build
-.PHONY : x/fast
+ChessGame/fast:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/build
+.PHONY : ChessGame/fast
 
-test5.o: test5.cpp.o
+Chess.o: Chess.cpp.o
 
-.PHONY : test5.o
+.PHONY : Chess.o
 
 # target to build an object file
-test5.cpp.o:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/test5.cpp.o
-.PHONY : test5.cpp.o
+Chess.cpp.o:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/Chess.cpp.o
+.PHONY : Chess.cpp.o
 
-test5.i: test5.cpp.i
+Chess.i: Chess.cpp.i
 
-.PHONY : test5.i
+.PHONY : Chess.i
 
 # target to preprocess a source file
-test5.cpp.i:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/test5.cpp.i
-.PHONY : test5.cpp.i
+Chess.cpp.i:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/Chess.cpp.i
+.PHONY : Chess.cpp.i
 
-test5.s: test5.cpp.s
+Chess.s: Chess.cpp.s
 
-.PHONY : test5.s
+.PHONY : Chess.s
 
 # target to generate assembly for a file
-test5.cpp.s:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/test5.cpp.s
-.PHONY : test5.cpp.s
+Chess.cpp.s:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/Chess.cpp.s
+.PHONY : Chess.cpp.s
 
 # Help Target
 help:
@@ -156,12 +156,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... x"
-	@echo "... test5.o"
-	@echo "... test5.i"
-	@echo "... test5.s"
+	@echo "... edit_cache"
+	@echo "... ChessGame"
+	@echo "... Chess.o"
+	@echo "... Chess.i"
+	@echo "... Chess.s"
 .PHONY : help
 
 

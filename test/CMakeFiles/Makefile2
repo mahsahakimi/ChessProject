@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = "/home/mahsa/AP Project/faz2/test"
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/x.dir/all
+all: CMakeFiles/ChessGame.dir/all
 
 .PHONY : all
 
@@ -63,36 +63,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/x.dir/clean
+clean: CMakeFiles/ChessGame.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/x.dir
+# Target rules for target CMakeFiles/ChessGame.dir
 
 # All Build rule for target.
-CMakeFiles/x.dir/all:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/depend
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/mahsa/AP Project/faz2/test/CMakeFiles" --progress-num=1,2 "Built target x"
-.PHONY : CMakeFiles/x.dir/all
+CMakeFiles/ChessGame.dir/all:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/depend
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/home/mahsa/AP Project/faz2/test/CMakeFiles" --progress-num=1,2 "Built target ChessGame"
+.PHONY : CMakeFiles/ChessGame.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/x.dir/rule: cmake_check_build_system
+CMakeFiles/ChessGame.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/mahsa/AP Project/faz2/test/CMakeFiles" 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/x.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/ChessGame.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "/home/mahsa/AP Project/faz2/test/CMakeFiles" 0
-.PHONY : CMakeFiles/x.dir/rule
+.PHONY : CMakeFiles/ChessGame.dir/rule
 
 # Convenience name for target.
-x : CMakeFiles/x.dir/rule
+ChessGame: CMakeFiles/ChessGame.dir/rule
 
-.PHONY : x
+.PHONY : ChessGame
 
 # clean rule for target.
-CMakeFiles/x.dir/clean:
-	$(MAKE) -f CMakeFiles/x.dir/build.make CMakeFiles/x.dir/clean
-.PHONY : CMakeFiles/x.dir/clean
+CMakeFiles/ChessGame.dir/clean:
+	$(MAKE) -f CMakeFiles/ChessGame.dir/build.make CMakeFiles/ChessGame.dir/clean
+.PHONY : CMakeFiles/ChessGame.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

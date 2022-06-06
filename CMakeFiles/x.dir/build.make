@@ -57,27 +57,27 @@ include CMakeFiles/x.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/x.dir/flags.make
 
-CMakeFiles/x.dir/test4.cpp.o: CMakeFiles/x.dir/flags.make
-CMakeFiles/x.dir/test4.cpp.o: test4.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/mahsa/AP Project/faz2/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/x.dir/test4.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/x.dir/test4.cpp.o -c "/home/mahsa/AP Project/faz2/test4.cpp"
+CMakeFiles/x.dir/Src/test5.cpp.o: CMakeFiles/x.dir/flags.make
+CMakeFiles/x.dir/Src/test5.cpp.o: Src/test5.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/mahsa/AP Project/faz2/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/x.dir/Src/test5.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/x.dir/Src/test5.cpp.o -c "/home/mahsa/AP Project/faz2/Src/test5.cpp"
 
-CMakeFiles/x.dir/test4.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/x.dir/test4.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/mahsa/AP Project/faz2/test4.cpp" > CMakeFiles/x.dir/test4.cpp.i
+CMakeFiles/x.dir/Src/test5.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/x.dir/Src/test5.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/home/mahsa/AP Project/faz2/Src/test5.cpp" > CMakeFiles/x.dir/Src/test5.cpp.i
 
-CMakeFiles/x.dir/test4.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/x.dir/test4.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/mahsa/AP Project/faz2/test4.cpp" -o CMakeFiles/x.dir/test4.cpp.s
+CMakeFiles/x.dir/Src/test5.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/x.dir/Src/test5.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/home/mahsa/AP Project/faz2/Src/test5.cpp" -o CMakeFiles/x.dir/Src/test5.cpp.s
 
 # Object files for target x
 x_OBJECTS = \
-"CMakeFiles/x.dir/test4.cpp.o"
+"CMakeFiles/x.dir/Src/test5.cpp.o"
 
 # External object files for target x
 x_EXTERNAL_OBJECTS =
 
-x : CMakeFiles/x.dir/test4.cpp.o
+x : CMakeFiles/x.dir/Src/test5.cpp.o
 x : CMakeFiles/x.dir/build.make
 x : CMakeFiles/x.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/home/mahsa/AP Project/faz2/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable x"

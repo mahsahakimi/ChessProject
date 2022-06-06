@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/mahsa/AP Project/faz2/Src/test5.cpp
+/home/mahsa/AP Project/faz2/test/Chess.cpp
 iostream
 -
 string
